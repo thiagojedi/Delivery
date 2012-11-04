@@ -42,10 +42,11 @@ void cria_cardapio(GtkWidget* port)
                 nome = gtk_label_new("nome");
                 preco = gtk_label_new("R$ 12, 00");
                 botao = gtk_button_new_with_label("Incluir");
-        
+
                 gtk_box_pack_start(GTK_BOX(prato), imagem, FALSE, FALSE, 0);
                 gtk_box_pack_start(GTK_BOX(prato), nome, FALSE, FALSE, 0);
                 gtk_box_pack_start(GTK_BOX(prato), preco, FALSE, FALSE, 0);
+                gtk_box_pack_start(GTK_BOX(prato), botao, FALSE, FALSE, 0);
 
 
                 b = (i%3);
@@ -69,13 +70,28 @@ main (int argc, char *argv[])
         gtk_builder_add_from_file (builder, "main.glade", NULL);
 
         window = GTK_WIDGET (gtk_builder_get_object (builder, "window"));
+        gtk_widget_set_size_request(GTK_WIDGET(window), 500, 300);
         viewport = GTK_WIDGET (gtk_builder_get_object (builder, "viewport"));
         gtk_builder_connect_signals (builder, NULL);          
 
 
         g_object_unref (G_OBJECT (builder));
 
-        cria_cardapio(viewport);
+        // Listando Restaurantes
+        GtkWidget *tabela;
+        tabela = gtk_table_new(3, 2, TRUE);
+        gtk_table_set_row_spacings(GTK_TABLE(tabela), 5);
+        gtk_table_set_col_spacings(GTK_TABLE(tabela), 5);
+
+        GtkWidget *imagem, *nome, *categorias, *botao;
+
+        int b, c;
+
+        for (int i = 0; i < 6; ++i)
+        {
+                /* code aqui */
+        }
+
 
         
         gtk_widget_show_all (window);       
