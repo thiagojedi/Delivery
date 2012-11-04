@@ -1,3 +1,3 @@
-all: main.c
-	gcc -g -o delivery main.c -export-dynamic `pkg-config --cflags --libs gtk+-2.0`
-	./delivery
+CFLAGS = -Wall -g `pkg-config --cflags --libs gtk+-3.0`
+
+all: main
