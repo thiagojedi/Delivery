@@ -149,10 +149,16 @@ void listar_cardapios()
 
         GtkWidget *prato, *imagem, *nome, *preco, *botao, *voltar;
 
-        voltar = gtk_button_new_with_label("Voltar");
+        GtkVBox *caixa_botao;
+        caixa_botao = gtk_vbox_new(TRUE, 0);
+
+        voltar = gtk_button_new_with_label("< Voltar");
+        gtk_button_set_relief(GTK_BUTTON(voltar), GTK_RELIEF_NONE);
         g_signal_connect(voltar, "clicked", G_CALLBACK(on_voltar_clicked), NULL);
 
-        gtk_table_attach_defaults(GTK_TABLE(tabela), voltar, 0, 1, 0, 1);
+        gtk_box_pack_start(GTK_BOX(caixa_botao), voltar, TRUE, FALSE, 0);
+
+        gtk_table_attach_defaults(GTK_TABLE(tabela), GTK_WIDGET(caixa_botao), 0, 1, 0, 1);
 
         int b, c, i;
         for (i = 1; i < 9; ++i)
