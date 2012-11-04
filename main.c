@@ -14,7 +14,7 @@ criar_janela()
 }
 
 void
-on_window_destroy(GtkObject *object, gpointer user_data)
+on_window_destroy(GtkWidget *object, gpointer user_data)
 {
         gtk_main_quit();
 }
@@ -56,7 +56,7 @@ void cria_cardapio(GtkWidget* port)
                 gtk_table_attach_defaults (tabela, prato, b, b+1, c, c+1);
         }
 
-        gtk_container_add(port, tabela);
+        gtk_container_add(GTK_CONTAINER (port), tabela);
 }
 
 int
