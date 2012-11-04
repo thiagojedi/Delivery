@@ -21,39 +21,39 @@ on_window_destroy(GtkWidget *object, gpointer user_data)
 
 void cria_cardapio(GtkWidget* port)
 {
-        GtkWidget *filho_antigo;
+        int b, c, i;
+        GtkWidget *filho_antigo,
+                  *prato,
+                  *imagem,
+                  *nome,
+                  *preco,
+                  *botao;
 
-        GtkBin *bin;
-        bin = port;
-
-        filho_antigo = gtk_bin_get_child(bin);
+        filho_antigo = gtk_bin_get_child(GTK_BIN (port));
         gtk_widget_destroy(filho_antigo);
 
         GtkWidget *tabela;
         tabela = gtk_table_new(3, 3, TRUE);
-        gtk_table_set_row_spacings(tabela, 5);
-        gtk_table_set_col_spacings(tabela, 5);
-
-        GtkWidget *prato, *imagem, *nome, *preco, *botao;
-        int b, c, i;
+        gtk_table_set_row_spacings(GTK_TABLE (tabela), 5);
+        gtk_table_set_col_spacings(GTK_TABLE (tabela), 5);
 
         for (i = 0; i < 9; ++i)
         {
-                prato = gtk_vbox_new(FALSE, 0);
+                prato = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
                 imagem = gtk_label_new("imagem");
                 nome = gtk_label_new("nome");
                 preco = gtk_label_new("R$ 12, 00");
                 botao = gtk_button_new_with_label("Incluir");
         
-                gtk_box_pack_start(prato, imagem, FALSE, FALSE, 0);
-                gtk_box_pack_start(prato, nome, FALSE, FALSE, 0);
-                gtk_box_pack_start(prato, preco, FALSE, FALSE, 0);
+                gtk_box_pack_start(GTK_BOX (prato), imagem, FALSE, FALSE, 0);
+                gtk_box_pack_start(GTK_BOX (prato), nome, FALSE, FALSE, 0);
+                gtk_box_pack_start(GTK_BOX (prato), preco, FALSE, FALSE, 0);
 
 
                 b = (i%3);
                 c = i/3;
-                gtk_table_attach_defaults (tabela, prato, b, b+1, c, c+1);
+                gtk_table_attach_defaults (GTK_TABLE (tabela), prato, b, b+1, c, c+1);
         }
 
         gtk_container_add(GTK_CONTAINER (port), tabela);
