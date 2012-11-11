@@ -117,7 +117,7 @@ void listar_restaurantes(int voltou)
 
         gtk_container_add(GTK_CONTAINER(viewport), tabela);
 
-        if (1 == pedido && 0 == pedido_feito)
+        if (0 == pedido_feito && 1 == voltou)
                 mostrar_finalizar();
 
         gtk_widget_show_all(tabela);
