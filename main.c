@@ -59,7 +59,7 @@ void limpar_viewport()
         GtkWidget *filho_antigo;
 
         filho_antigo = gtk_bin_get_child(GTK_BIN(viewport));
-        if (filho_antigo != NULL)
+        if (NULL != filho_antigo)
                 gtk_widget_destroy(filho_antigo);
 }
 
@@ -117,7 +117,7 @@ void listar_restaurantes(int voltou)
 
         gtk_container_add(GTK_CONTAINER(viewport), tabela);
 
-        if (voltou == 1 && pedido_feito == 0)
+        if (1 == pedido && 0 == pedido_feito)
                 mostrar_finalizar();
 
         gtk_widget_show_all(tabela);
