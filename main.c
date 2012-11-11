@@ -21,44 +21,32 @@ int pedido_feito = 0;
 
 // Callbacks
 
-void
-on_window_destroy(GtkObject *object, 
-        gpointer user_data)
+void on_window_destroy(GtkObject *object, gpointer user_data)
 {
         sair();
 }
 
-void
-on_sair_menu_item_activate(GtkWidget *widget,
-        gpointer data)
+void on_sair_menu_item_activate(GtkWidget *widget, gpointer data)
 {
         sair();
 }
 
-void 
-on_restaurante_clicked( GtkWidget *widget,
-        gpointer   data )
+void on_restaurante_clicked(GtkWidget *widget, gpointer data)
 {
         listar_cardapios();
 }
 
-void 
-on_voltar_clicked( GtkWidget *widget, 
-        gpointer data)
+void on_voltar_clicked(GtkWidget *widget, gpointer data)
 {
         listar_restaurantes(1);
 }
 
-void 
-on_finalizar_clicked(GtkWidget *widget,
-        gpointer data)
+void on_finalizar_clicked(GtkWidget *widget, gpointer data)
 {
         g_print("Ir para finalizar");
 }
 
-void
-on_sobre_menu_item_activate(GtkWidget *widget,
-        gpointer data)
+void on_sobre_menu_item_activate(GtkWidget *widget, gpointer data)
 {
         gtk_dialog_run(GTK_DIALOG(sobre));
         gtk_widget_hide(GTK_WIDGET(sobre));
@@ -66,8 +54,7 @@ on_sobre_menu_item_activate(GtkWidget *widget,
 
 /* ---------- */
 
-void 
-limpar_viewport()
+void limpar_viewport()
 {
         GtkWidget *filho_antigo;
 
@@ -76,14 +63,12 @@ limpar_viewport()
                 gtk_widget_destroy(filho_antigo);
 }
 
-void 
-sair()
+void sair()
 {
         gtk_main_quit();
 }
 
-void 
-mostrar_finalizar()
+void mostrar_finalizar()
 {
         GtkWidget *finalizar;
         finalizar = gtk_button_new_with_label("Finalizar pedido");
@@ -101,33 +86,33 @@ void listar_restaurantes(int voltou)
         limpar_viewport();
 
         GtkWidget *tabela;
-        tabela = gtk_table_new(3, 2, TRUE);
-        gtk_table_set_row_spacings(GTK_TABLE(tabela), 5);
-        gtk_table_set_col_spacings(GTK_TABLE(tabela), 5);
+        tabela = gtk_vbox_new(TRUE, 10);
 
-        GtkWidget *restaurante, *imagem, *nome, *categorias, *botao;
+        GtkWidget *restaurante, *imagem, *nome, *categorias, *botao, *boniteza;
 
-        int b, c, i;
+        int i;
 
         for (i = 0; i < 6; ++i)
         {
                 restaurante = gtk_vbox_new(FALSE, 0);
+                boniteza = gtk_hbox_new(TRUE, 0);
 
-                imagem = gtk_label_new("imagem");
-                nome = gtk_label_new("Restaurante");
-                categorias = gtk_label_new("categoria");
+                imagem = gtk_label_new("[ Imagem ]");
+                nome = gtk_label_new("[Nome do Restaurante]");
+                categorias = gtk_label_new("[Categoria]");
                 botao = gtk_button_new_with_label("Ver pratos");
 
-                gtk_box_pack_start(GTK_BOX(restaurante), imagem, FALSE, FALSE, 0);
                 gtk_box_pack_start(GTK_BOX(restaurante), nome, FALSE, FALSE, 0);
                 gtk_box_pack_start(GTK_BOX(restaurante), categorias, FALSE, FALSE, 0);
-                gtk_box_pack_start(GTK_BOX(restaurante), botao, FALSE, FALSE, 0);
+
+                gtk_box_pack_start(GTK_BOX(boniteza), imagem, FALSE, FALSE, 0);
+                gtk_box_pack_start(GTK_BOX(boniteza), restaurante, FALSE, FALSE, 0);
+                gtk_box_pack_start(GTK_BOX(boniteza), botao, FALSE, FALSE, 0);
+                
 
                 g_signal_connect(botao, "clicked", G_CALLBACK(on_restaurante_clicked), NULL);
 
-                b = (i%3);
-                c = i/3;
-                gtk_table_attach_defaults (GTK_TABLE(tabela), restaurante, b, b+1, c, c+1);
+                gtk_box_pack_start(GTK_BOX(tabela), boniteza, FALSE, FALSE, 0);
         }
 
         gtk_container_add(GTK_CONTAINER(viewport), tabela);
@@ -147,7 +132,7 @@ void listar_cardapios()
         gtk_table_set_row_spacings(GTK_TABLE(tabela), 5);
         gtk_table_set_col_spacings(GTK_TABLE(tabela), 5);
 
-        GtkWidget *prato, *imagem, *nome, *preco, *botao, *voltar;
+        GtkWidget *prato, *imagem, *nome, *preco, *botao, *voltar, *boniteza1, *boniteza;
 
         GtkVBox *caixa_botao;
         caixa_botao = gtk_vbox_new(TRUE, 0);
@@ -164,15 +149,19 @@ void listar_cardapios()
         for (i = 1; i < 9; ++i)
         {
                 prato = gtk_vbox_new(FALSE, 0);
+                boniteza1 = gtk_vbox_new(FALSE, 0);
+                boniteza = gtk_hbox_new(FALSE, 5);
 
-                imagem = gtk_label_new("imagem");
-                nome = gtk_label_new("nome");
-                preco = gtk_label_new("R$ 12, 00");
+                imagem = gtk_label_new("[Imagem]");
+                nome = gtk_label_new("Nome do prato");
+                preco = gtk_label_new("R$ 12,00");
                 botao = gtk_toggle_button_new_with_label("Incluir");
 
-                gtk_box_pack_start(GTK_BOX(prato), imagem, FALSE, FALSE, 0);
-                gtk_box_pack_start(GTK_BOX(prato), nome, FALSE, FALSE, 0);
-                gtk_box_pack_start(GTK_BOX(prato), preco, FALSE, FALSE, 0);
+                gtk_box_pack_start(GTK_BOX(boniteza1), nome, FALSE, FALSE, 0);
+                gtk_box_pack_start(GTK_BOX(boniteza1), preco, FALSE, FALSE, 0);
+                gtk_box_pack_start(GTK_BOX(boniteza), imagem, FALSE, FALSE, 0);
+                gtk_box_pack_start(GTK_BOX(boniteza), boniteza1, FALSE, FALSE, 0);
+                gtk_box_pack_start(GTK_BOX(prato), boniteza, FALSE, FALSE, 0);
                 gtk_box_pack_start(GTK_BOX(prato), botao, FALSE, FALSE, 0);
 
 
