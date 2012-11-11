@@ -4,6 +4,7 @@
 GtkWidget *vbox;
 GtkWidget *viewport;
 GtkWidget *sobre;
+GtkWidget *confirm;
 int pedido_feito = 0;
 /* ---------- */
 
@@ -43,7 +44,8 @@ void on_voltar_clicked(GtkWidget *widget, gpointer data)
 
 void on_finalizar_clicked(GtkWidget *widget, gpointer data)
 {
-        g_print("Ir para finalizar");
+        gtk_dialog_run(GTK_DIALOG(confirm));
+        gtk_widget_hide(GTK_WIDGET(confirm));
 }
 
 void on_sobre_menu_item_activate(GtkWidget *widget, gpointer data)
@@ -192,6 +194,7 @@ main (int argc, char *argv[])
         viewport = GTK_WIDGET (gtk_builder_get_object (builder, "viewport"));
         vbox = GTK_WIDGET (gtk_builder_get_object(builder, "vbox1"));
         sobre = GTK_WIDGET (gtk_builder_get_object(builder, "caixa_sobre"));
+        confirm = GTK_WIDGET (gtk_builder_get_object(builder, "dialogo_confirm"));
         gtk_builder_connect_signals (builder, NULL);          
 
 
