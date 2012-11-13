@@ -1,210 +1,170 @@
 #include <gtk/gtk.h>
+#include <string.h>
 
-// Variaveis globais
-GtkWidget *vbox;
-GtkWidget *viewport;
-GtkWidget *sobre;
-GtkWidget *confirm;
-int pedido_feito = 0;
-/* ---------- */
+const char CATEGORIAS[] = "Categorias";
+const char RESTAURANTES[] = "Restaurantes";
+const char PRATOS[] = "Pratos";
+const char* LISTA_CAT[] = { "Regional", "Italiana", "Chinesa", "Vegetariana", "", "Regional", "Italiana", "Chinesa", "Vegetariana", "" };
+const char* LISTA_RES[] = { "Nome 1", "Nome 2", "Nome 3", "Nome 4", "Nome 5", "Nome 6", "Nome 7", "Nome 8", "Nome 9", "Nome 10" };
 
-// Assinatura das funcoes
-        // Listagens
-        void listar_restaurantes(int voltou);
-        void listar_cardapios();
 
-        // Auxiliares
-        void limpar_viewport();
-        void mostrar_finalizar();
-        void sair();
-
-/* ---------- */
-
-// Callbacks
+GtkWidget *vbox, *sobre, *confirm, *areaUtil, *lbusca, *entry1;
+GtkWidget *exp_categoria, *exp_restaurante, *exp_pratos;
 
 void on_window_destroy(GtkObject *object, gpointer user_data)
 {
-        sair();
+	gtk_main_quit();
 }
 
 void on_sair_menu_item_activate(GtkWidget *widget, gpointer data)
 {
-        sair();
+	gtk_main_quit();
+}
+
+void on_categoria_clicked(GtkWidget *widget, gpointer data)
+{
+	char tmp[32] = "";
+	strcpy(tmp, CATEGORIAS);
+	strcat(tmp, " [");
+	strcat(tmp, gtk_button_get_label(GTK_BUTTON(widget)));
+	strcat(tmp, "]");
+	gtk_expander_set_expanded(GTK_EXPANDER(exp_categoria), FALSE);
+	gtk_expander_set_label(GTK_EXPANDER(exp_categoria), tmp);
+	preencheRestaurante();
 }
 
 void on_restaurante_clicked(GtkWidget *widget, gpointer data)
 {
-        listar_cardapios();
+	char tmp[32] = "";
+	strcpy(tmp, RESTAURANTES);
+	strcat(tmp, " [");
+	strcat(tmp, gtk_button_get_label(GTK_BUTTON(widget)));
+	strcat(tmp, "]");
+	gtk_expander_set_expanded(GTK_EXPANDER(exp_restaurante), FALSE);
+	gtk_expander_set_label(GTK_EXPANDER(exp_restaurante), tmp);
+	preenchePrato();
+}
+
+void on_prato_clicked(GtkWidget *widget, gpointer data)
+{
+	char tmp[32] = "";
+	strcpy(tmp, PRATOS);
+	strcat(tmp, " [");
+	strcat(tmp, gtk_button_get_label(GTK_BUTTON(widget)));
+	strcat(tmp, "]");
+	gtk_expander_set_expanded(GTK_EXPANDER(exp_pratos), FALSE);
+	gtk_expander_set_label(GTK_EXPANDER(exp_pratos), tmp);
+	preencheConfirmacao();
 }
 
 void on_voltar_clicked(GtkWidget *widget, gpointer data)
 {
-        listar_restaurantes(1);
+
 }
 
 void on_finalizar_clicked(GtkWidget *widget, gpointer data)
 {
-        gtk_dialog_run(GTK_DIALOG(confirm));
-        gtk_widget_hide(GTK_WIDGET(confirm));
+	gtk_dialog_run(GTK_DIALOG(confirm));
+	gtk_widget_hide(GTK_WIDGET(confirm));
 }
 
 void on_sobre_menu_item_activate(GtkWidget *widget, gpointer data)
 {
-        gtk_dialog_run(GTK_DIALOG(sobre));
-        gtk_widget_hide(GTK_WIDGET(sobre));
+	gtk_dialog_run(GTK_DIALOG(sobre));
+	gtk_widget_hide(GTK_WIDGET(sobre));
 }
 
-/* ---------- */
+void preencheCategoria () {
+	exp_categoria = gtk_expander_new(CATEGORIAS);
 
-void limpar_viewport()
-{
-        GtkWidget *filho_antigo;
+	GtkWidget *tabela = gtk_table_new(2,5,TRUE);
+	int i, j;
+	for (i = 0; i < 2; i++)
+		for (j = 0; j < 5; j++) {
+			GtkWidget *botao = gtk_button_new_with_label(LISTA_CAT[i*5+j]);
+			g_signal_connect(G_OBJECT(botao), "clicked", G_CALLBACK(on_categoria_clicked), NULL);
 
-        filho_antigo = gtk_bin_get_child(GTK_BIN(viewport));
-        if (NULL != filho_antigo)
-                gtk_widget_destroy(filho_antigo);
+			gtk_table_attach(GTK_TABLE(tabela), botao, j, j+1, i, i+1, GTK_EXPAND | GTK_FILL, GTK_EXPAND | GTK_FILL, 5, 5);
+		}
+
+	gtk_container_add(GTK_CONTAINER(exp_categoria), tabela);
+	gtk_box_pack_start(GTK_BOX(areaUtil), exp_categoria, TRUE, TRUE, 0);
+	gtk_expander_set_expanded(GTK_EXPANDER(exp_categoria), TRUE);
+	gtk_widget_show_all(exp_categoria);
 }
 
-void sair()
-{
-        gtk_main_quit();
+void preencheRestaurante() {
+	exp_restaurante = gtk_expander_new(RESTAURANTES);
+
+	GtkWidget *tabela = gtk_table_new(5,2,TRUE);
+	int i, j;
+	for (i = 0; i < 5; i++)
+		for (j = 0; j < 2; j++) {
+			GtkWidget *botao = gtk_button_new_with_label(LISTA_RES[i*2+j]);
+			g_signal_connect(G_OBJECT(botao), "clicked", G_CALLBACK(on_restaurante_clicked), NULL);
+
+			gtk_table_attach(GTK_TABLE(tabela), botao, j, j+1, i, i+1, GTK_EXPAND | GTK_FILL, GTK_EXPAND | GTK_FILL, 5, 5);
+		}
+
+	gtk_container_add(GTK_CONTAINER(exp_restaurante), tabela);
+	gtk_box_pack_start(GTK_BOX(areaUtil), exp_restaurante, TRUE, TRUE, 0);
+	gtk_expander_set_expanded(GTK_EXPANDER(exp_restaurante), TRUE);
+	gtk_widget_show_all(exp_restaurante);
 }
 
-void mostrar_finalizar()
-{
-        GtkWidget *finalizar;
-        finalizar = gtk_button_new_with_label("Finalizar pedido");
-        g_signal_connect(finalizar, "clicked", G_CALLBACK(on_finalizar_clicked), NULL);
+void preenchePrato() {
+	exp_pratos = gtk_expander_new(PRATOS);
 
-        gtk_box_pack_start(GTK_BOX(vbox), finalizar, FALSE, FALSE, 0);
-        gtk_widget_show_all(GTK_WIDGET(vbox));
+	GtkWidget *tabela = gtk_table_new(5,5,TRUE);
+	int i, j;
+	char p[7] = "Prato A";
+	for (i = 0; i < 5; i++)
+		for (j = 0; j < 5; j++) {
+			p[6]++;
+			GtkWidget *botao = gtk_button_new_with_label(p);
+			g_signal_connect(G_OBJECT(botao), "clicked", G_CALLBACK(on_prato_clicked), NULL);
 
-        pedido_feito = 1;
+			gtk_table_attach(GTK_TABLE(tabela), botao, j, j+1, i, i+1, GTK_EXPAND | GTK_FILL, GTK_EXPAND | GTK_FILL, 5, 5);
+		}
+
+	gtk_container_add(GTK_CONTAINER(exp_pratos), tabela);
+	gtk_box_pack_start(GTK_BOX(areaUtil), exp_pratos, TRUE, TRUE, 0);
+	gtk_expander_set_expanded(GTK_EXPANDER(exp_pratos), TRUE);
+	gtk_widget_show_all(exp_pratos);
 }
 
-
-void listar_restaurantes(int voltou)
-{
-        limpar_viewport();
-
-        GtkWidget *tabela;
-        tabela = gtk_vbox_new(TRUE, 10);
-
-        GtkWidget *restaurante, *imagem, *nome, *categorias, *botao, *boniteza;
-
-        int i;
-
-        for (i = 0; i < 6; ++i)
-        {
-                restaurante = gtk_vbox_new(FALSE, 0);
-                boniteza = gtk_hbox_new(TRUE, 0);
-
-                imagem = gtk_label_new("[ Imagem ]");
-                nome = gtk_label_new("[Nome do Restaurante]");
-                categorias = gtk_label_new("[Categoria]");
-                botao = gtk_button_new_with_label("Ver pratos");
-
-                gtk_box_pack_start(GTK_BOX(restaurante), nome, FALSE, FALSE, 0);
-                gtk_box_pack_start(GTK_BOX(restaurante), categorias, FALSE, FALSE, 0);
-
-                gtk_box_pack_start(GTK_BOX(boniteza), imagem, FALSE, FALSE, 0);
-                gtk_box_pack_start(GTK_BOX(boniteza), restaurante, FALSE, FALSE, 0);
-                gtk_box_pack_start(GTK_BOX(boniteza), botao, FALSE, FALSE, 0);
-                
-
-                g_signal_connect(botao, "clicked", G_CALLBACK(on_restaurante_clicked), NULL);
-
-                gtk_box_pack_start(GTK_BOX(tabela), boniteza, FALSE, FALSE, 0);
-        }
-
-        gtk_container_add(GTK_CONTAINER(viewport), tabela);
-
-        if (0 == pedido_feito && 1 == voltou)
-                mostrar_finalizar();
-
-        gtk_widget_show_all(tabela);
+void preencheConfirmacao() {
+	GtkWidget *finalizar = gtk_button_new_with_label("Finalizar pedido");
+	g_signal_connect(G_OBJECT(finalizar), "clicked", G_CALLBACK(on_finalizar_clicked), NULL);
+	gtk_box_pack_start(GTK_BOX(areaUtil), finalizar, TRUE, TRUE, 0);
+	gtk_widget_show_all(areaUtil);
 }
 
-void listar_cardapios()
+int main(int argc, char const *argv[])
 {
-        limpar_viewport();
+	GtkBuilder *builder;
+	GtkWidget *window;
 
-        GtkWidget *tabela;
-        tabela = gtk_table_new(3, 3, TRUE);
-        gtk_table_set_row_spacings(GTK_TABLE(tabela), 5);
-        gtk_table_set_col_spacings(GTK_TABLE(tabela), 5);
+	
+	gtk_init (&argc, &argv);
+	
+	builder = gtk_builder_new ();
+	gtk_builder_add_from_file (builder, "main.glade", NULL);
 
-        GtkWidget *prato, *imagem, *nome, *preco, *botao, *voltar, *boniteza1, *boniteza;
+	window = GTK_WIDGET (gtk_builder_get_object (builder, "window"));
+	gtk_widget_set_size_request(GTK_WIDGET(window), 500, 300);
 
-        GtkVBox *caixa_botao;
-        caixa_botao = gtk_vbox_new(TRUE, 0);
+	vbox = GTK_WIDGET (gtk_builder_get_object(builder, "vbox1"));
+	sobre = GTK_WIDGET (gtk_builder_get_object(builder, "caixa_sobre"));
+	confirm = GTK_WIDGET (gtk_builder_get_object(builder, "dialogo_confirm"));
+	areaUtil = GTK_WIDGET (gtk_builder_get_object(builder, "AreaUtil"));
+	gtk_builder_connect_signals (builder, NULL);	  
 
-        voltar = gtk_button_new_with_label("< Voltar");
-        gtk_button_set_relief(GTK_BUTTON(voltar), GTK_RELIEF_NONE);
-        g_signal_connect(voltar, "clicked", G_CALLBACK(on_voltar_clicked), NULL);
+	g_object_unref (G_OBJECT (builder));
 
-        gtk_box_pack_start(GTK_BOX(caixa_botao), voltar, TRUE, FALSE, 0);
+	preencheCategoria();
 
-        gtk_table_attach_defaults(GTK_TABLE(tabela), GTK_WIDGET(caixa_botao), 0, 1, 0, 1);
-
-        int b, c, i;
-        for (i = 1; i < 9; ++i)
-        {
-                prato = gtk_vbox_new(FALSE, 0);
-                boniteza1 = gtk_vbox_new(FALSE, 0);
-                boniteza = gtk_hbox_new(FALSE, 5);
-
-                imagem = gtk_label_new("[Imagem]");
-                nome = gtk_label_new("Nome do prato");
-                preco = gtk_label_new("R$ 12,00");
-                botao = gtk_toggle_button_new_with_label("Incluir");
-
-                gtk_box_pack_start(GTK_BOX(boniteza1), nome, FALSE, FALSE, 0);
-                gtk_box_pack_start(GTK_BOX(boniteza1), preco, FALSE, FALSE, 0);
-                gtk_box_pack_start(GTK_BOX(boniteza), imagem, FALSE, FALSE, 0);
-                gtk_box_pack_start(GTK_BOX(boniteza), boniteza1, FALSE, FALSE, 0);
-                gtk_box_pack_start(GTK_BOX(prato), boniteza, FALSE, FALSE, 0);
-                gtk_box_pack_start(GTK_BOX(prato), botao, FALSE, FALSE, 0);
-
-
-                b = (i%3);
-                c = i/3;
-                gtk_table_attach_defaults (GTK_TABLE(tabela), prato, b, b+1, c, c+1);
-        }
-
-        gtk_container_add(GTK_CONTAINER(viewport), tabela);
-        gtk_widget_show_all(tabela);
-}
-
-int
-main (int argc, char *argv[])
-{
-        GtkBuilder *builder;
-        GtkWidget *window;
-
-        
-        gtk_init (&argc, &argv);
-        
-        builder = gtk_builder_new ();
-        gtk_builder_add_from_file (builder, "main.glade", NULL);
-
-        window = GTK_WIDGET (gtk_builder_get_object (builder, "window"));
-        gtk_widget_set_size_request(GTK_WIDGET(window), 500, 300);
-
-        viewport = GTK_WIDGET (gtk_builder_get_object (builder, "viewport"));
-        vbox = GTK_WIDGET (gtk_builder_get_object(builder, "vbox1"));
-        sobre = GTK_WIDGET (gtk_builder_get_object(builder, "caixa_sobre"));
-        confirm = GTK_WIDGET (gtk_builder_get_object(builder, "dialogo_confirm"));
-        gtk_builder_connect_signals (builder, NULL);          
-
-
-        g_object_unref (G_OBJECT (builder));
-
-        // Listando Restaurantes
-        listar_restaurantes(0);
-        
-        gtk_widget_show_all (window);       
-        gtk_main ();
-        
-        return 0;
+	gtk_widget_show_all (window);
+	gtk_main ();
+	return 0;
 }
