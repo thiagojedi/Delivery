@@ -8,7 +8,7 @@ const char* LISTA_CAT[] = { "Regional", "Italiana", "Chinesa", "Vegetariana", ""
 const char* LISTA_RES[] = { "Nome 1", "Nome 2", "Nome 3", "Nome 4", "Nome 5", "Nome 6", "Nome 7", "Nome 8", "Nome 9", "Nome 10" };
 
 GtkWidget *vbox, *sobre, *confirm, *areaUtil, *lbusca, *entry1;
-GtkWidget *exp_categoria, *exp_restaurante, *exp_pratos;
+GtkWidget *exp_categoria = 0, *exp_restaurante = 0, *exp_pratos = 0;
 
 void preenchePrato();
 void preencheRestaurante();
@@ -21,7 +21,6 @@ void on_window_destroy(GtkObject *object, gpointer user_data)
 {
 	gtk_main_quit();
 }
-
 void on_sair_menu_item_activate(GtkWidget *widget, gpointer data)
 {
 	gtk_main_quit();
@@ -75,7 +74,17 @@ void on_prato_clicked(GtkWidget *widget, gpointer data)
 	if (!confirmar) {
 		confirmar = 1;
 		preencheConfirmacao();
-	}
+	}	
+}
+
+void expandir(GtkExpander *widget, gpointer data)
+{
+	if (widget != exp_categoria)
+		gtk_expander_set_expanded(exp_categoria, FALSE);
+	if (widget != exp_pratos)
+		gtk_expander_set_expanded(exp_pratos, FALSE);
+	if (widget != exp_restaurante)
+		gtk_expander_set_expanded(exp_restaurante, FALSE);
 }
 
 void on_voltar_clicked(GtkWidget *widget, gpointer data)
@@ -95,8 +104,10 @@ void on_sobre_menu_item_activate(GtkWidget *widget, gpointer data)
 	gtk_widget_hide(GTK_WIDGET(sobre));
 }
 
-void preencheCategoria () {
+void preencheCategoria ()
+{
 	exp_categoria = gtk_expander_new(CATEGORIAS);
+	g_signal_connect(G_OBJECT(exp_categoria), "activate", G_CALLBACK(expandir), NULL);
 
 	GtkWidget *tabela = gtk_table_new(2,5,TRUE);
 	int i, j;
@@ -114,8 +125,10 @@ void preencheCategoria () {
 	gtk_widget_show_all(exp_categoria);
 }
 
-void preencheRestaurante() {
+void preencheRestaurante()
+{
 	exp_restaurante = gtk_expander_new(RESTAURANTES);
+	g_signal_connect(G_OBJECT(exp_restaurante), "activate", G_CALLBACK(expandir), NULL);
 
 	GtkWidget *tabela = gtk_table_new(5,2,TRUE);
 	int i, j;
@@ -133,8 +146,10 @@ void preencheRestaurante() {
 	gtk_widget_show_all(exp_restaurante);
 }
 
-void preenchePrato() {
+void preenchePrato()
+{
 	exp_pratos = gtk_expander_new(PRATOS);
+	g_signal_connect(G_OBJECT(exp_pratos), "activate", G_CALLBACK(expandir), NULL);
 
 	GtkWidget *vdisplay = gtk_viewport_new(gtk_adjustment_new(200,200,200,0,0,0), gtk_adjustment_new(175,175,600,80,160,80));
 	GtkWidget *tabela = gtk_table_new(2,3,TRUE);
@@ -160,17 +175,18 @@ void preenchePrato() {
 			gtk_box_pack_start(GTK_BOX(vbox1), preco, FALSE, FALSE, 0);
 			gtk_box_pack_start(GTK_BOX(vbox1), hbox, FALSE, FALSE, 0);
 
-			gtk_table_attach(GTK_TABLE(tabela), vbox1, j, j+1, i, i+1, GTK_EXPAND | GTK_FILL, GTK_EXPAND | GTK_FILL, 2, 2);
+			gtk_table_attach(GTK_TABLE(tabela), vbox1, j, j+1, i, i+1, GTK_EXPAND | GTK_FILL, GTK_EXPAND | GTK_FILL, 5, 5);
 		}
 
-	gtk_container_add(GTK_CONTAINER(vdisplay), tabela);
-	gtk_container_add(GTK_CONTAINER(exp_pratos), vdisplay);
+	//gtk_container_add(GTK_CONTAINER(vdisplay), tabela);
+	gtk_container_add(GTK_CONTAINER(exp_pratos), tabela);
 	gtk_box_pack_start(GTK_BOX(areaUtil), exp_pratos, TRUE, TRUE, 0);
 	gtk_expander_set_expanded(GTK_EXPANDER(exp_pratos), TRUE);
 	gtk_widget_show_all(exp_pratos);
 }
 
-void preencheConfirmacao() {
+void preencheConfirmacao()
+{
 	GtkWidget *finalizar = gtk_button_new_with_label("Finalizar pedido");
 	g_signal_connect(G_OBJECT(finalizar), "clicked", G_CALLBACK(on_finalizar_clicked), NULL);
 	gtk_box_pack_start(GTK_BOX(areaUtil), finalizar, TRUE, TRUE, 0);
